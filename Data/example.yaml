@@ -222,6 +222,10 @@ Rutracker:
   parseDelay: 2000
   topicFetchAttempts: 5
   log: true
+  # Карта разделов: встроенная (все видеоразделы) + правки. См. docs/trackers/rutracker.mdx
+  # excludeForums: ["1392"]
+  # forums:
+  #   - { id: 807, types: [tvshow], kind: nonstandard, quick: false }
 
 Selezen:
   host: https://open.selezen.org

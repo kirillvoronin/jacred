@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using JacRed.Models.AppConf;
 
 namespace JacRed.Infrastructure.Trackers.Rutracker
 {
@@ -300,11 +301,224 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
             ["1472"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false },
             ["2068"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false },
             ["2016"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false },
+
+            // Остальные видеоразделы (добавлены 26.09.2026).
+            //
+            // Источник — полное дерево форумов https://api.rutracker.cc/v1/static/cat_forum_tree
+            // (категории «Кино, Видео и ТВ», «Сериалы», «Документалистика и юмор», «Спорт»,
+            // подразделы 1202 «Авто/мото»), видео-классы — по карте категорий Jackett.
+            // Не берём: архивы, «Ищу», обсуждения, правила, звуковые дорожки, арт, AMV/VMV/ролики.
+            // Число раздач на 26.09.2026 (api.rutracker.cc/v1/static/forum_size): 87 260.
+            // Фильмы
+            ["376"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Авторские дебюты
+            ["106"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Фильмы России и СССР на национальных языках [без перевода]
+            ["187"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Классика мирового кинематографа
+            ["212"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Сборники фильмов
+            ["2459"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Короткий метр
+            ["1235"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Грайндхаус
+            ["166"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Зарубежные фильмы без перевода
+            ["93"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // DVD Video
+            ["905"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Классика мирового кинематографа (DVD Video)
+            ["877"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Фильмы Ближнего Зарубежья (DVD Video)
+            ["1576"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Азиатские фильмы (DVD Video)
+            ["2220"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Индийское кино (DVD Video)
+            ["1670"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Грайндхаус (DVD Video)
+            ["2198"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // HD Video
+            ["194"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Грайндхаус (HD Video)
+            ["352"] = new() { Types = new[] { "movie" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // 3D/Стерео Кино, Видео, TV и Спорт
+
+            // Театр, юмор и телепередачи
+            ["511"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Театр
+            ["1493"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Спектакли без перевода
+            ["1569"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Званый ужин
+            ["373"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Хорошие Шутки
+            ["1186"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Вечерний Квартал
+            ["137"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Фильмы со смешным переводом (пародии)
+            ["1484"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Цирк
+            ["1485"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Школа злословия
+            ["114"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Юмор] Сатирики и юмористы
+            ["1982"] = new() { Types = new[] { "tvshow" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Развлекательные передачи
+
+            // Спорт
+            ["514"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // 3D Спорт
+            ["926"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // XXV Зимние Олимпийские игры 2026
+            ["1311"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Биатлон
+            ["922"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Хоккей
+            ["918"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Керлинг
+            ["1315"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // XXIV Зимние Олимпийские игры 2022
+            ["1346"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // XXXIII Летние Олимпийские игры 2024
+            ["2338"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Бокс. Борьба Вольная и Греко-римская. Дзюдо. Карате. Тхэквондо
+            ["927"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Другие виды спорта
+            ["1319"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Спорт (видео)
+            ["2545"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Клубный Чемпионат Мира 2025
+            ["2147"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Чемпионат Мира 2026 (финальный турнир)
+            ["497"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Документальные фильмы (футбол)
+            ["2008"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // СССР - Канада
+            ["126"] = new() { Types = new[] { "sport" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Документальные фильмы и аналитика
+
+            // Мультфильмы
+            ["1900"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Отечественные мультфильмы (DVD)
+            ["2258"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Иностранные короткометражные мультфильмы (DVD)
+            ["521"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Иностранные мультфильмы (DVD)
+            ["2183"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Мультфильмы Ближнего Зарубежья
+            ["484"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Иностранные короткометражные мультфильмы
+            ["822"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Сборники мультфильмов
+            ["181"] = new() { Types = new[] { "multfilm" }, TitleKind = RutrackerTitleKind.Movie, QuickParse = true }, // Мультфильмы без перевода
+
+            // Мультсериалы
+            ["816"] = new() { Types = new[] { "multserial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Мультсериалы (DVD Video)
+
+            // Аниме (в т.ч. разделы тайтлов: Наруто, Ван-Пис, Гандам, Покемоны)
+            ["599"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Аниме (DVD Video)
+            ["1391"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Аниме (плеерный подраздел)
+            ["2544"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Ван-Пис
+            ["1642"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Гандам
+            ["1390"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Наруто
+            ["404"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Покемоны
+            ["1277"] = new() { Types = new[] { "anime" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = true }, // Дунхуа и Эни
+
+            // Сериалы (в т.ч. разделы отдельных сериалов и некондиция)
+            ["80"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сельский детектив
+            ["1535"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // По законам военного времени
+            ["188"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Московские тайны
+            ["91"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Я знаю твои секреты
+            ["990"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Универ / Универ. Новая общага / СашаТаня
+            ["1408"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Женская версия
+            ["175"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // След
+            ["79"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Некрасивая подружка
+            ["104"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Психология преступления
+            ["1359"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Веб-сериалы, Вебизоды к сериалам и Пилотные серии сериалов
+            ["184"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Бесстыжие / Shameless (US)
+            ["1417"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Во все тяжкие / Breaking Bad
+            ["1449"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Игра престолов / Game of Thrones
+            ["504"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Клан Сопрано / The Sopranos
+            ["372"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сверхъестественное / Supernatural
+            ["110"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Секретные материалы / The X-Files
+            ["121"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Твин пикс / Twin Peaks
+            ["507"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Теория большого взрыва + Детство Шелдона
+            ["536"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Форс-мажоры / Костюмы в законе / Suits
+            ["1144"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Ходячие мертвецы + Бойтесь ходячих мертвецов
+            ["195"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Для некондиционных раздач
+            ["265"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Игра престолов / Game of Thrones (HD Video)
+            ["2404"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сверхъестественное / Supernatural (HD Video)
+            ["2405"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Секретные материалы / The X-Files (HD Video)
+            ["2370"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Твин пикс / Twin Peaks (HD Video)
+            ["2396"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Теория Большого Взрыва / The Big Bang Theory (HD Video)
+            ["2398"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Ходячие мертвецы + Бойтесь ходячих мертвецов (HD Video)
+            ["1498"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Для некондиционных раздач (HD Video)
+            ["273"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Для некондиционных раздач (UHD Video)
+            ["594"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сериалы Венесуэлы
+            ["1301"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сериалы Индии
+            ["607"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сериалы Колумбии
+            ["1574"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сериалы Латинской Америки с озвучкой (раздачи папками)
+            ["1539"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сериалы Латинской Америки с субтитрами
+            ["781"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Сериалы совместного производства
+            ["1537"] = new() { Types = new[] { "serial" }, TitleKind = RutrackerTitleKind.Serial, QuickParse = true }, // Для некондиционных раздач
+
+            // Документалистика, СМИ, религия, авто/мото передачи
+            ["19"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // СМИ
+            ["670"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Вера и религия
+            ["1475"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Религия] Христианство
+            ["2107"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Религия] Ислам
+            ["1453"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Религия] Культы и новые религиозные движения
+            ["294"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Видео Религия] Религии Индии, Тибета и Восточной Азии
+            ["103"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Документальные (DVD)
+            ["656"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Мастера искусств Театра и Кино
+            ["2159"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Музыка
+            ["2380"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Социальные ток-шоу
+            ["672"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Всё о доме, быте и дизайне
+            ["1280"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Битва экстрасенсов / Теория невероятности / Искатели / Галилео
+            ["752"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Русские сенсации / Программа Максимум / Профессия репортёр
+            ["1114"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Паранормальные явления
+            ["2176"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // [Док] Разное / некондиция
+            ["2323"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Информационно-аналитические и общественно-политические (HD Video)
+            ["1278"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Биографии. Личности и кумиры (HD Video)
+            ["85"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Некондиционное видео - Документальные (HD Video)
+            ["2151"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Top Gear/Топ Гир
+            ["1983"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Тест драйв/Обзоры/Автосалоны
+            ["1984"] = new() { Types = new[] { "docuserial", "documovie" }, TitleKind = RutrackerTitleKind.NonStandard, QuickParse = false }, // Тюнинг/форсаж
         };
 
-        public static IEnumerable<string> Ids => Map.Keys;
+        static readonly object _currentLock = new object();
+        static RutrackerSettings _currentSource;
+        static IReadOnlyDictionary<string, RutrackerCategory> _current = Map;
+
+        /// <summary>Карта с учётом Rutracker.forums / Rutracker.excludeForums из init.yaml.</summary>
+        public static IReadOnlyDictionary<string, RutrackerCategory> Current
+        {
+            get
+            {
+                var settings = AppInit.conf?.Rutracker;
+                lock (_currentLock)
+                {
+                    if (!ReferenceEquals(settings, _currentSource))
+                    {
+                        _current = Resolve(settings?.forums, settings?.excludeForums);
+                        _currentSource = settings;
+                    }
+
+                    return _current;
+                }
+            }
+        }
+
+        public static IEnumerable<string> Ids => Current.Keys;
 
         public static IEnumerable<string> QuickParseIds =>
-            Map.Where(kv => kv.Value.QuickParse).Select(kv => kv.Key);
+            Current.Where(kv => kv.Value.QuickParse).Select(kv => kv.Key);
+
+        /// <summary>
+        /// Встроенная карта минус excludeForums, плюс forums (добавить раздел или заменить поля встроенного).
+        /// Незаполненные поля записи берутся из встроенного раздела; новый раздел без types пропускается.
+        /// </summary>
+        public static Dictionary<string, RutrackerCategory> Resolve(IEnumerable<RutrackerForumSettings> forums, IEnumerable<string> excludeForums)
+        {
+            var result = new Dictionary<string, RutrackerCategory>(Map);
+
+            if (excludeForums != null)
+            {
+                foreach (string id in excludeForums)
+                {
+                    if (!string.IsNullOrWhiteSpace(id))
+                        result.Remove(id.Trim());
+                }
+            }
+
+            if (forums == null)
+                return result;
+
+            foreach (var forum in forums)
+            {
+                string id = forum?.id?.Trim();
+                if (string.IsNullOrEmpty(id) || !id.All(char.IsDigit))
+                    continue;
+
+                Map.TryGetValue(id, out var builtIn);
+
+                string[] types = forum.types?.Where(t => !string.IsNullOrWhiteSpace(t)).Select(t => t.Trim()).ToArray();
+                if (types == null || types.Length == 0)
+                    types = builtIn?.Types;
+
+                if (types == null || types.Length == 0)
+                    continue;
+
+                result[id] = new RutrackerCategory
+                {
+                    Types = types,
+                    TitleKind = TryParseTitleKind(forum.kind, out var kind) ? kind : builtIn?.TitleKind ?? RutrackerTitleKind.NonStandard,
+                    QuickParse = forum.quick ?? builtIn?.QuickParse ?? false
+                };
+            }
+
+            return result;
+        }
+
+        public static bool TryParseTitleKind(string value, out RutrackerTitleKind kind)
+        {
+            kind = RutrackerTitleKind.NonStandard;
+            return !string.IsNullOrWhiteSpace(value)
+                && !value.Trim().All(char.IsDigit)
+                && System.Enum.TryParse(value.Trim(), ignoreCase: true, out kind);
+        }
     }
 }

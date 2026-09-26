@@ -134,7 +134,7 @@ namespace JacRed.Configuration
 
         public TrackerSettings Mazepa = new TrackerSettings("https://mazepa.to");
 
-        public TrackerSettings Rutracker = new TrackerSettings("https://rutracker.org");
+        public RutrackerSettings Rutracker = new RutrackerSettings("https://rutracker.org");
 
         public TrackerSettings Selezen = new TrackerSettings("https://use.selezen.club");
 

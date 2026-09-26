@@ -1,0 +1,40 @@
+name: fork image
+
+# Образ форка: ghcr.io/kirillvoronin/jacred:<тег>. Сборки upstream привязаны к jacred-fdb/jacred.
+on:
+  push:
+    tags: ["v*-forums*"]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    if: github.repository == 'kirillvoronin/jacred'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: "10.0.x"
+
+      - run: dotnet test tests/JacRed.Tests/JacRed.Tests.csproj
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: push
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          build-args: JACRED_VERSION=${{ github.ref_name }}
+          tags: ghcr.io/kirillvoronin/jacred:${{ github.ref_name }}
+
+      - run: echo "digest ${{ steps.push.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"

@@ -97,7 +97,7 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
         {
             var torrents = new List<TorrentDetails>();
 
-            if (!RutrackerCategories.Map.TryGetValue(cat, out var meta))
+            if (!RutrackerCategories.Current.TryGetValue(cat, out var meta))
                 return torrents;
 
             foreach (string row in tParse.ReplaceBadNames(html).Split("class=\"torTopic\"").Skip(1))

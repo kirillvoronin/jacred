@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JacRed.Infrastructure.Trackers.Rutracker;
+using JacRed.Models.AppConf;
 using Newtonsoft.Json.Linq;
 
 namespace JacRed.Configuration.Schema
@@ -285,6 +287,7 @@ namespace JacRed.Configuration.Schema
 
             ValidateTrackerList(config.synctrackers, "synctrackers", warnings);
             ValidateTrackerList(config.disable_trackers, "disable_trackers", warnings);
+            ValidateRutrackerForums(config.Rutracker, warnings);
 
             if (config.tsuri != null)
             {
@@ -341,6 +344,26 @@ namespace JacRed.Configuration.Schema
                 if (string.IsNullOrWhiteSpace(item)) continue;
                 if (!KnownTrackerSlugs.Contains(item))
                     warnings.Add($"{fieldName}: неизвестный трекер «{item}»");
+            }
+        }
+
+        private static void ValidateRutrackerForums(RutrackerSettings settings, List<string> warnings)
+        {
+            if (settings?.forums == null) return;
+            foreach (var forum in settings.forums)
+            {
+                string id = forum?.id?.Trim();
+                if (string.IsNullOrEmpty(id) || !id.All(char.IsDigit))
+                {
+                    warnings.Add($"Rutracker.forums: некорректный id «{forum?.id}»");
+                    continue;
+                }
+
+                if (!RutrackerCategories.Map.ContainsKey(id) && (forum.types == null || forum.types.All(string.IsNullOrWhiteSpace)))
+                    warnings.Add($"Rutracker.forums: у нового раздела {id} нет types — раздел пропущен");
+
+                if (!string.IsNullOrWhiteSpace(forum.kind) && !RutrackerCategories.TryParseTitleKind(forum.kind, out _))
+                    warnings.Add($"Rutracker.forums: раздел {id}, kind «{forum.kind}» — ожидается movie, serial или nonstandard");
             }
         }
 
