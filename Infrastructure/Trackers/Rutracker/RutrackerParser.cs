@@ -143,6 +143,93 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
             return torrents;
         }
 
+        static readonly Regex DumpHashRe = new("^[0-9A-Fa-f]{40}$", RegexOptions.Compiled);
+        static readonly string[] SizeUnits = { "B", "KB", "MB", "GB", "TB" };
+
+        public static TorrentDetails FromDumpRecord(RutrackerDumpRecord r, DateTime dumpDateUtc, TimeZoneInfo zone, out string skipReason) =>
+            FromDumpRecord(r, dumpDateUtc, zone, RutrackerCategories.Current, out skipReason);
+
+        internal static TorrentDetails FromDumpRecord(RutrackerDumpRecord r, DateTime dumpDateUtc, TimeZoneInfo zone,
+            IReadOnlyDictionary<string, RutrackerCategory> forums, out string skipReason)
+        {
+            skipReason = null;
+
+            if (r.Deleted)
+            {
+                skipReason = "deleted";
+                return null;
+            }
+
+            if (r.ForumId == null || !forums.TryGetValue(r.ForumId, out var meta))
+            {
+                skipReason = "forum";
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(r.Hash) || !DumpHashRe.IsMatch(r.Hash))
+            {
+                skipReason = "nohash";
+                return null;
+            }
+
+            string title = tParse.ReplaceBadNames(Regex.Replace(r.Title ?? "", "[\n\r\t ]+", " ").Trim());
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                skipReason = "title";
+                return null;
+            }
+
+            var (name, originalname, relased, skipRow) = ParseTitleNames(meta.TitleKind, title);
+            if (skipRow)
+            {
+                skipReason = "title";
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+                name = Regex.Split(title, "(\\[|\\/|\\(|\\|)", RegexOptions.IgnoreCase)[0].Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                skipReason = "title";
+                return null;
+            }
+
+            DateTime created = DateTime.SpecifyKind(
+                TimeZoneInfo.ConvertTimeFromUtc(DateTimeOffset.FromUnixTimeSeconds(r.UnixTs).UtcDateTime, zone),
+                DateTimeKind.Unspecified);
+
+            return new TorrentDetails()
+            {
+                trackerName = TrackerName,
+                types = meta.Types,
+                url = $"{AppInit.conf.Rutracker.host}/forum/viewtopic.php?t={r.Id}",
+                title = title,
+                sid = 0,
+                pir = 0,
+                sizeName = FormatSizeName(r.Size),
+                createTime = created,
+                updateTime = dumpDateUtc,
+                magnet = $"magnet:?xt=urn:btih:{r.Hash.ToUpperInvariant()}&tr=http://bt4.t-ru.org/ann?magnet",
+                name = name,
+                originalname = originalname,
+                relased = relased
+            };
+        }
+
+        internal static string FormatSizeName(long bytes)
+        {
+            double value = bytes;
+            int unit = 0;
+            while (value >= 1024 && unit < SizeUnits.Length - 1)
+            {
+                value /= 1024;
+                unit++;
+            }
+
+            return value.ToString("0.00", CultureInfo.InvariantCulture) + " " + SizeUnits[unit];
+        }
+
         public static bool ApplyTopicPageDetails(TorrentDetails t, string fullNews)
         {
             if (fullNews == null)

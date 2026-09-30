@@ -41,6 +41,8 @@ namespace JacRed.Infrastructure.Security
             new("/dev/TracksStats", JacRedAccessPolicy.DevAdmin, "DevTracksController"),
             new("/dev/FixKnabenNames", JacRedAccessPolicy.DevAdmin, "DevMigrationController"),
             new("/dev/FixRudubRelased", JacRedAccessPolicy.DevAdmin, "DevMigrationController"),
+            new("/dev/ImportRutrackerDump", JacRedAccessPolicy.DevAdmin, "DevRutrackerDumpController", "Import RuTracker XML dump into FileDB"),
+            new("/dev/ImportRutrackerDumpStatus", JacRedAccessPolicy.DevAdmin, "DevRutrackerDumpController"),
             new("/jsondb/save", JacRedAccessPolicy.DevAdmin, "DbController"),
             new("/cron/maintenance/Check", JacRedAccessPolicy.DevAdmin, "MaintenanceController", "FDB integrity report|safe|full"),
             new("/cron/maintenance/Status", JacRedAccessPolicy.DevAdmin, "MaintenanceController"),
