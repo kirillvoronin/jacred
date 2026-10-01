@@ -71,6 +71,13 @@ namespace JacRed.Infrastructure.Persistence
                     : 0;
             }
 
+            // Rutracker: .../forum/viewtopic.php?t=6234567 under .org, .net or a mirror.
+            if (string.Equals(trackerName, "rutracker", StringComparison.OrdinalIgnoreCase))
+            {
+                var m = Regex.Match(url, @"viewtopic\.php\?t=(\d+)", RegexOptions.IgnoreCase);
+                return m.Success && int.TryParse(m.Groups[1].Value, out int topicId) ? topicId : 0;
+            }
+
             // NNMClub: .../forum/viewtopic.php?t=1882070
             if (string.Equals(trackerName, "nnmclub", StringComparison.OrdinalIgnoreCase))
             {
