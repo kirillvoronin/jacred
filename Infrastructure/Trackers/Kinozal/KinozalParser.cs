@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using JacRed.Infrastructure.Parsing;
+using JacRed.Models.AppConf;
 using JacRed.Models.Details;
 using JacRed.Models.tParse;
 
@@ -129,7 +130,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
                 if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(_sid) || string.IsNullOrWhiteSpace(_pir) || string.IsNullOrWhiteSpace(sizeName))
                     continue;
 
-                string url = DetailsUrl(AppInit.conf.Kinozal.host, detailsId);
+                string url = DetailsUrl(CanonicalBase(AppInit.conf.Kinozal), detailsId);
                 #endregion
 
                 #region Парсим раздачи
@@ -387,6 +388,32 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
         {
             string baseHost = string.IsNullOrWhiteSpace(host) ? "https://kinozal.guru" : host.TrimEnd('/');
             return $"{baseHost}/details.php?id={id}";
+        }
+
+        public static string RequestBase(TrackerSettings settings) => settings?.rqHost()?.TrimEnd('/');
+
+        public static string CanonicalBase(TrackerSettings settings) => settings?.host?.TrimEnd('/');
+
+        public static TorrentDetails FindCached(IReadOnlyDictionary<string, TorrentDetails> db, TorrentDetails listing)
+        {
+            if (db == null || listing?.url == null)
+                return null;
+
+            if (db.TryGetValue(listing.url, out TorrentDetails exact))
+                return exact;
+
+            if (!TryGetDetailsId(listing.url, out int id))
+                return null;
+
+            foreach (var t in db.Values)
+            {
+                if (t != null
+                    && string.Equals(t.trackerName, listing.trackerName, StringComparison.OrdinalIgnoreCase)
+                    && TryGetDetailsId(t.url, out int other) && other == id)
+                    return t;
+            }
+
+            return null;
         }
 
         static bool TryGetDetailsIdFromRow(string row, out int id)

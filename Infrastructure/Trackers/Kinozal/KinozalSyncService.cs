@@ -70,7 +70,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
         {
             try
             {
-                return new Uri(AppInit.conf.Kinozal.host).Host;
+                return new Uri(KinozalParser.RequestBase(AppInit.conf.Kinozal)).Host;
             }
             catch (UriFormatException)
             {
@@ -190,7 +190,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
                     return false;
                 }
 
-                string host = AppInit.conf.Kinozal.host?.TrimEnd('/');
+                string host = KinozalParser.RequestBase(AppInit.conf.Kinozal);
                 if (string.IsNullOrWhiteSpace(host))
                 {
                     _lastLoginError = "host is not configured";
@@ -278,7 +278,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
                 browseUrl,
                 encoding: PageEncoding,
                 cookie: CookieHeader(),
-                referer: $"{AppInit.conf.Kinozal.host}/",
+                referer: $"{KinozalParser.RequestBase(AppInit.conf.Kinozal)}/",
                 useproxy: AppInit.conf.Kinozal.useproxy,
                 cancellationToken: cancellationToken);
         }
@@ -302,7 +302,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    string baseUrl = $"{AppInit.conf.Kinozal.host}/browse.php";
+                    string baseUrl = $"{KinozalParser.RequestBase(AppInit.conf.Kinozal)}/browse.php";
                     ParserLog.Write(TrackerName, $"Starting parse page={page}, base: {baseUrl}");
                     foreach (string cat in KinozalCategories.Ids)
                     {
@@ -349,7 +349,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
                         {
                             ct.ThrowIfCancellationRequested();
 
-                            string html = await GetBrowseHtml($"{AppInit.conf.Kinozal.host}/browse.php?c={cat}&d={year}&t=1", ct);
+                            string html = await GetBrowseHtml($"{KinozalParser.RequestBase(AppInit.conf.Kinozal)}/browse.php?c={cat}&d={year}&t=1", ct);
                             if (delayMs > 0)
                                 await Task.Delay(delayMs, ct);
 
@@ -492,7 +492,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
             if (!await EnsureLoggedIn())
                 return false;
 
-            string browseUrl = $"{AppInit.conf.Kinozal.host}/browse.php?c={cat}&page={page}" + arg;
+            string browseUrl = $"{KinozalParser.RequestBase(AppInit.conf.Kinozal)}/browse.php?c={cat}&page={page}" + arg;
             string html = await GetBrowseHtmlRetryingTransient(browseUrl, cancellationToken);
 
             if (KinozalParser.IsTransientBrowseFailure(html))
@@ -602,7 +602,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
 
             await FileDB.AddOrUpdate(torrents, async (t, db) =>
             {
-                if (db.TryGetValue(t.url, out TorrentDetails cached) && KinozalParser.ShouldSkipHashFetch(cached, t))
+                if (KinozalParser.FindCached(db, t) is TorrentDetails cached && KinozalParser.ShouldSkipHashFetch(cached, t))
                 {
                     resolved++;
                     return true;
@@ -615,7 +615,7 @@ namespace JacRed.Infrastructure.Trackers.Kinozal
                 // Cloudflare hosts through FlareSolverr. request.post is flaky in the
                 // shared Chromium session (returns the previous browse tab).
                 string srv_details = await HttpClient.Get(
-                    $"{AppInit.conf.Kinozal.host}/get_srv_details.php?id={id}&action=2",
+                    $"{KinozalParser.RequestBase(AppInit.conf.Kinozal)}/get_srv_details.php?id={id}&action=2",
                     encoding: PageEncoding,
                     cookie: CookieHeader(),
                     useproxy: AppInit.conf.Kinozal.useproxy,
