@@ -111,12 +111,13 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
                 if (!TryParseRowFields(row, out string url, out string title, out string sid, out string pir, out string sizeName))
                     continue;
 
-                var (name, originalname, relased, skipRow) = ParseTitleNames(meta.TitleKind, title);
+                string nameSource = TitleForNames(title);
+                var (name, originalname, relased, skipRow) = ParseTitleNames(meta.TitleKind, nameSource);
                 if (skipRow)
                     continue;
 
                 if (string.IsNullOrWhiteSpace(name))
-                    name = Regex.Split(title, "(\\[|\\/|\\(|\\|)", RegexOptions.IgnoreCase)[0].Trim();
+                    name = Regex.Split(nameSource, "(\\[|\\/|\\(|\\|)", RegexOptions.IgnoreCase)[0].Trim();
 
                 if (!string.IsNullOrWhiteSpace(name))
                 {
@@ -179,7 +180,8 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
                 return null;
             }
 
-            var (name, originalname, relased, skipRow) = ParseTitleNames(meta.TitleKind, title);
+            string nameSource = TitleForNames(title);
+            var (name, originalname, relased, skipRow) = ParseTitleNames(meta.TitleKind, nameSource);
             if (skipRow)
             {
                 skipReason = "title";
@@ -187,7 +189,7 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
             }
 
             if (string.IsNullOrWhiteSpace(name))
-                name = Regex.Split(title, "(\\[|\\/|\\(|\\|)", RegexOptions.IgnoreCase)[0].Trim();
+                name = Regex.Split(nameSource, "(\\[|\\/|\\(|\\|)", RegexOptions.IgnoreCase)[0].Trim();
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -357,6 +359,28 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
             // Always store the canonical tracker URL in FDB; requests use rqHost(alias).
             url = $"{AppInit.conf.Rutracker.host}/forum/viewtopic.php?t={url}";
             return true;
+        }
+
+        static readonly Regex LeadingSquareTagRe = new(@"^\[[^\]]*\]\s*", RegexOptions.Compiled);
+        static readonly Regex LeadingRoundTagRe = new(@"^\([^\)]*\)\s+", RegexOptions.Compiled);
+        static readonly Regex LeadingWordPartRe = new(@"^\(([^\)\s]+)\)(?=\p{L})", RegexOptions.Compiled);
+
+        static string TitleForNames(string title)
+        {
+            string rest = title?.TrimStart() ?? "";
+            while (true)
+            {
+                var tag = LeadingSquareTagRe.Match(rest);
+                if (!tag.Success)
+                    tag = LeadingRoundTagRe.Match(rest);
+
+                if (!tag.Success || tag.Length >= rest.Length)
+                    break;
+
+                rest = rest.Substring(tag.Length);
+            }
+
+            return LeadingWordPartRe.Replace(rest, "$1");
         }
 
         static (string name, string originalname, int relased, bool skipRow) ParseTitleNames(RutrackerTitleKind titleKind, string title)
