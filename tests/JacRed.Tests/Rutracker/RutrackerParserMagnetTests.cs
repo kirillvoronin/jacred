@@ -16,13 +16,15 @@ public class RutrackerParserMagnetTests
         string size = Size,
         string magnet = Magnet,
         DateTime? create = null,
-        DateTime? update = null) => new()
+        DateTime? update = null,
+        DateTime? check = null) => new()
     {
         title = title,
         sizeName = size,
         magnet = magnet,
         createTime = create ?? new DateTime(2026, 2, 4, 12, 8, 3, DateTimeKind.Utc),
-        updateTime = update ?? new DateTime(2026, 2, 4, 12, 8, 3, DateTimeKind.Utc)
+        updateTime = update ?? new DateTime(2026, 2, 4, 12, 8, 3, DateTimeKind.Utc),
+        checkTime = check ?? update ?? new DateTime(2026, 2, 4, 12, 8, 3, DateTimeKind.Utc)
     };
 
     static TorrentDetails Listing(
@@ -60,6 +62,35 @@ public class RutrackerParserMagnetTests
         // Silo: listing createTime July, magnet updateTime February, title/size unchanged.
         var listing = Listing(create: new DateTime(2026, 7, 5, 1, 51, 0, DateTimeKind.Utc));
         Assert.False(RutrackerParser.ShouldSkipTopicFetch(Cached(), listing));
+    }
+
+    [Fact]
+    public void ShouldSkipTopicFetch_CommentAfterLastWriteButSeenSince_Skips()
+    {
+        var cached = Cached(
+            update: new DateTime(2026, 9, 29, 22, 1, 49, DateTimeKind.Utc),
+            check: new DateTime(2026, 10, 1, 10, 0, 26, DateTimeKind.Utc));
+        var listing = Listing(create: new DateTime(2026, 9, 30, 23, 50, 0, DateTimeKind.Unspecified));
+        Assert.True(RutrackerParser.ShouldSkipTopicFetch(cached, listing));
+    }
+
+    [Fact]
+    public void ShouldSkipTopicFetch_CommentAfterLastSeen_Fetches()
+    {
+        var cached = Cached(
+            update: new DateTime(2026, 9, 29, 22, 1, 49, DateTimeKind.Utc),
+            check: new DateTime(2026, 10, 1, 10, 0, 26, DateTimeKind.Utc));
+        var listing = Listing(create: new DateTime(2026, 10, 1, 13, 30, 0, DateTimeKind.Unspecified));
+        Assert.False(RutrackerParser.ShouldSkipTopicFetch(cached, listing));
+    }
+
+    [Fact]
+    public void ShouldSkipTopicFetch_ListingTimeIsMoscow()
+    {
+        var seen = new DateTime(2026, 10, 1, 9, 0, 0, DateTimeKind.Utc);
+        var cached = Cached(update: seen, check: seen);
+        var listing = Listing(create: new DateTime(2026, 10, 1, 11, 32, 0, DateTimeKind.Unspecified));
+        Assert.True(RutrackerParser.ShouldSkipTopicFetch(cached, listing));
     }
 
     [Fact]

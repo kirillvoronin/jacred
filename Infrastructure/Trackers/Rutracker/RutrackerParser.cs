@@ -253,7 +253,8 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
 
         /// <summary>
         /// Skip the topic GET when listing title and size match a row that already
-        /// has a magnet written at or after the listing timestamp. Title-only skip
+        /// has a magnet and was last written or checked at or after the listing timestamp
+        /// (the topic's last post, Moscow time). Title-only skip
         /// froze magnets when rutracker replaced the torrent in-place (Silo t=6601495).
         /// </summary>
         public static bool ShouldSkipTopicFetch(TorrentDetails cached, TorrentDetails listing)
@@ -270,10 +271,12 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
             if (!SizeNamesEqual(cached.sizeName, listing.sizeName))
                 return false;
 
-            if (listing.createTime == default || cached.updateTime == default)
+            if (listing.createTime == default || (cached.updateTime == default && cached.checkTime == default))
                 return false;
 
-            if (AsUtc(listing.createTime) > AsUtc(cached.updateTime))
+            DateTime writtenUtc = AsUtc(cached.updateTime);
+            DateTime checkedUtc = AsUtc(cached.checkTime);
+            if (AsUtc(listing.createTime) > (checkedUtc > writtenUtc ? checkedUtc : writtenUtc))
                 return false;
 
             return true;
@@ -299,8 +302,23 @@ namespace JacRed.Infrastructure.Trackers.Rutracker
             {
                 DateTimeKind.Utc => value,
                 DateTimeKind.Local => value.ToUniversalTime(),
-                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+                _ => TimeZoneInfo.ConvertTimeToUtc(value, MoscowTz)
             };
+        }
+
+        static readonly TimeZoneInfo MoscowTz = ResolveMoscowTz();
+
+        static TimeZoneInfo ResolveMoscowTz()
+        {
+            try { return TimeZoneInfo.FindSystemTimeZoneById("Europe/Moscow"); }
+            catch (TimeZoneNotFoundException) { }
+            catch (InvalidTimeZoneException) { }
+
+            try { return TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"); }
+            catch (TimeZoneNotFoundException) { }
+            catch (InvalidTimeZoneException) { }
+
+            return TimeZoneInfo.CreateCustomTimeZone("MSK", TimeSpan.FromHours(3), "MSK", "MSK");
         }
 
         static string MatchRow(string row, string pattern, int index = 1)
